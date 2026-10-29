@@ -1,5 +1,6 @@
 package eu.ha3.matmos.core;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,9 @@ public class EarlyMixinLoader implements IEarlyMixinLoader, IFMLLoadingPlugin {
 
     @Override
     public List<String> getMixins(Set<String> loadedCoreMods) {
-        return FMLLaunchHandler.side().isClient() ? Collections.singletonList("MixinSoundManager")
+        return FMLLaunchHandler.side().isClient() ? Arrays.asList("MixinSoundManager", "MixinSoundSystemStarterThread",
+                "accessor.BiomeGenBaseAccessor", "accessor.EntityAccessor", "accessor.FoodStatsAccessor",
+                "accessor.MinecraftAccessor", "accessor.SoundHandlerAccessor", "accessor.SoundManagerAccessor")
                 : Collections.<String>emptyList();
     }
 

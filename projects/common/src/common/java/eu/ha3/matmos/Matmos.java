@@ -19,6 +19,8 @@ import eu.ha3.matmos.abstraction.util.ASoundCategory;
 import eu.ha3.matmos.core.expansion.Expansion;
 import eu.ha3.matmos.core.expansion.Stable;
 import eu.ha3.matmos.core.expansion.VolumeUpdatable;
+import eu.ha3.matmos.core.mixin.accessor.SoundHandlerAccessor;
+import eu.ha3.matmos.core.mixin.accessor.SoundManagerAccessor;
 import eu.ha3.matmos.core.preinit.SoundSystemReplacerTransformer;
 import eu.ha3.matmos.core.sound.LoopingStreamedSoundManager;
 import eu.ha3.matmos.core.sound.Simulacrum;
@@ -190,7 +192,8 @@ public class Matmos extends HaddonImpl implements SupportsFrameEvents, SupportsC
         if (isActivated()) {
             return;
         }
-        if(!Minecraft.getMinecraft().getSoundHandler().sndManager.loaded) {
+        SoundManager soundManager = ((SoundHandlerAccessor) Minecraft.getMinecraft().getSoundHandler()).matmos$getSndManager();
+        if(!((SoundManagerAccessor) soundManager).matmos$isLoaded()) {
             queuedActivate = true;
             queuedActivateParameter = reloadConfigs;
             return;

@@ -12,6 +12,8 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.ResourcePackRepository;
 import net.minecraft.util.ResourceLocation;
 
+import eu.ha3.matmos.core.mixin.accessor.MinecraftAccessor;
+
 public class ResourcePackDealer {
     private static final ResourceLocation mat_pack = new ResourceLocation("matmos", "mat_pack.json");
     private static final ResourceLocation expansions = new ResourceLocation("matmos", "expansions.json");
@@ -20,7 +22,7 @@ public class ResourcePackDealer {
         return ((Stream<IResourcePack>)Stream
                 .concat(((List<ResourcePackRepository.Entry>) (Minecraft.getMinecraft().getResourcePackRepository()
                         .getRepositoryEntries())).stream().map(ResourcePackRepository.Entry::getResourcePack),
-                        Minecraft.getMinecraft().defaultResourcePacks.stream()))
+                        ((MinecraftAccessor) Minecraft.getMinecraft()).matmos$getDefaultResourcePacks().stream()))
                 .filter(this::checkCompatible).distinct();
     }
 
