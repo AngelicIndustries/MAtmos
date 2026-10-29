@@ -1,13 +1,16 @@
 package eu.ha3.matmos;
 
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
+import eu.ha3.matmos.core.sound.MusicArbiter;
 import eu.ha3.mc.haddon.forge.ForgeBase;
+import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = ForgeMatmos.MODID, name = ForgeMatmos.NAME, version = ForgeMatmos.VERSION,
         acceptedMinecraftVersions = "[1.7.10]", dependencies = "required-after:unimixins",
@@ -45,6 +48,11 @@ public class ForgeMatmos extends ForgeBase {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         super.init(event, MODID, NAME, VERSION);
+        if (event.getSide().isClient()) {
+            MusicArbiter arbiter = new MusicArbiter(MATMOS.getSoundManager());
+            MinecraftForge.EVENT_BUS.register(arbiter);
+            FMLCommonHandler.instance().bus().register(arbiter);
+        }
     }
 
 }

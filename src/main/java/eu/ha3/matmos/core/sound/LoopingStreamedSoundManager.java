@@ -159,6 +159,16 @@ public class LoopingStreamedSoundManager implements SupportsTickEvents, SoundMan
         }
     }
 
+    /** Whether a stream in the music category is playing or fading out. */
+    public boolean isMusicPlaying() {
+        for (StreamingSound sound : invPlayingSounds.keySet()) {
+            if (sound.getCategory() == SoundCategory.MUSIC) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void stopSound(StreamingSound sound) {
         if (isSoundManagerLoaded()) {
             String s = this.invPlayingSounds.get(sound);

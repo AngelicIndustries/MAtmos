@@ -85,6 +85,10 @@ public class ConfigManager {
                 "Auto: true if there's at least one soundpack which supports this option present, false otherwise\n");
         config.setProperty("rain.soundlist", VersionDependentConstants.RAIN_BLACKLIST,
                 "Comma-separated list of rain sounds to suppress if rain.suppress is true");
+        config.setProperty("music.overlap", false,
+                "Whether soundpack music may play over vanilla music. A soundpack sound is music when its sound event\n" +
+                "is in the music category in sounds.json. If false, vanilla music waits while soundpack music plays,\n" +
+                "and a vanilla track that is already playing fades out when soundpack music starts.\n");
         config.setProperty("rain.strengththreshold", "-1",
                 "Rain strength threshold above which it's considered to be raining by soundpacks\n" +
                 "Range: 0~1, or -1 to use the default setting, which is 0.2 in vanilla\n" +

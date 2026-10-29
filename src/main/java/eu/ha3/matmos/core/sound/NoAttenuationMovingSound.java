@@ -8,6 +8,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.client.audio.SoundEventAccessorComposite;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
@@ -18,6 +19,7 @@ public class NoAttenuationMovingSound extends MovingSound implements StreamingSo
     private float desiredPitch;
     private float volumeMod;
     private boolean underwater;
+    private Boolean music;
 
     private boolean notYetPlayed = true;
 
@@ -119,7 +121,20 @@ public class NoAttenuationMovingSound extends MovingSound implements StreamingSo
 
     @Override
     public SoundCategory getCategory() {
+        if (isMusic()) {
+            return SoundCategory.MUSIC;
+        }
         return underwater ? SoundCategory.MASTER : SoundCategory.AMBIENT;
+    }
+
+    /** A stream is music when its sound event is in the music category, so it follows the music slider. */
+    public boolean isMusic() {
+        if (music == null) {
+            SoundEventAccessorComposite event = Minecraft.getMinecraft().getSoundHandler()
+                    .getSound(getPositionedSoundLocation());
+            music = event != null && event.getSoundCategory() == SoundCategory.MUSIC;
+        }
+        return music;
     }
 
 }
