@@ -17,7 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
         guiFactory = "eu.ha3.matmos.gui.MAtmosGuiFactory",
         customProperties = {
                 @Mod.CustomProperty(k = "license", v = "WTFPL-2.0"),
-                @Mod.CustomProperty(k = "issueTrackerUrl", v = "https://github.com/JackOfNoneTrades/MAtmos/issues"),
+                @Mod.CustomProperty(k = "issueTrackerUrl", v = "https://github.com/AngelicIndustries/MAtmos/issues"),
                 @Mod.CustomProperty(k = "iconFile", v = "assets/matmos/icon.png"),
                 @Mod.CustomProperty(k = "backgroundFile", v = "assets/matmos/background.png") })
 public class ForgeMatmos extends ForgeBase {
