@@ -119,6 +119,11 @@ public class SoundHelper implements SoundCapabilities, Stable {
                     sound.setVolume(newVolume, fade);
                     sound.applyVolume(volumeModulator);
 
+                    // Skipped music stays not yet played, so the machine's next start tries again.
+                    if (soundManager.isMusicResting(sound)) {
+                        handle.resetLargestVolumeCommandThisTick();
+                        continue;
+                    }
                     boolean notYetPlayed = sound.popNotYetPlayed();
 
                     Matmos.DEBUGLOGGER.debug("playStreaming " + sound.getPositionedSoundLocation() + " (reuse=" + reuse

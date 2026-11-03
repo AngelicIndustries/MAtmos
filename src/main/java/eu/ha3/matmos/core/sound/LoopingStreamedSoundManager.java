@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import eu.ha3.matmos.ConfigManager;
 import eu.ha3.matmos.Matmos;
 import eu.ha3.matmos.core.mixin.accessor.SoundHandlerAccessor;
 import eu.ha3.matmos.core.mixin.accessor.SoundManagerAccessor;
@@ -70,7 +71,24 @@ public class LoopingStreamedSoundManager implements SupportsTickEvents, SoundMan
     private final Map<String, StreamingSound> playingSounds = new ConcurrentHashMap<>();
     private final Map<StreamingSound, String> invPlayingSounds = new ConcurrentHashMap<>();
 
+    private boolean otherMusicPlaying;
+    /** Music channels created while other music played, started once it's done. */
+    private final Set<String> waitingMusic = new HashSet<>();
+    private long lastMusicHeard;
+
     public void onTick() {
+        if (isMusicAudible()) {
+            lastMusicHeard = System.currentTimeMillis();
+        }
+        if (!otherMusicPlaying && !waitingMusic.isEmpty()) {
+            for (String s : waitingMusic) {
+                if (playingSounds.containsKey(s)) {
+                    getSoundSystem().play(s);
+                }
+            }
+            waitingMusic.clear();
+        }
+
         for (StreamingSound streamingSound : this.invPlayingSounds.keySet()) {
             ITickableSound itickablesound = streamingSound.asTickable();
 
@@ -149,7 +167,11 @@ public class LoopingStreamedSoundManager implements SupportsTickEvents, SoundMan
                                     resourcelocation, s);
                             getSoundSystem().setPitch(s, f2);
                             getSoundSystem().setVolume(s, f1);
-                            getSoundSystem().play(s);
+                            if (otherMusicPlaying && streamingSound.getCategory() == SoundCategory.MUSIC) {
+                                waitingMusic.add(s);
+                            } else {
+                                getSoundSystem().play(s);
+                            }
                             this.playingSounds.put(s, streamingSound);
                             this.invPlayingSounds.put(streamingSound, s);
                         }
@@ -159,10 +181,29 @@ public class LoopingStreamedSoundManager implements SupportsTickEvents, SoundMan
         }
     }
 
-    /** Whether a stream in the music category is playing or fading out. */
-    public boolean isMusicPlaying() {
-        for (StreamingSound sound : invPlayingSounds.keySet()) {
-            if (sound.getCategory() == SoundCategory.MUSIC) {
+    /**
+     * While other music plays, a stream in the music category that starts waits for it to end. Streams already playing
+     * carry on.
+     */
+    public void setOtherMusicPlaying(boolean playing) {
+        otherMusicPlaying = playing;
+    }
+
+    /**
+     * Whether a stream in the music category must not start yet: music.soundpack.gap minutes haven't passed since
+     * soundpack music was last heard, or another track is waiting its turn.
+     */
+    public boolean isMusicResting(StreamingSound sound) {
+        long gap = ConfigManager.getConfig().getInteger("music.soundpack.gap") * 60_000L;
+        return sound.getCategory() == SoundCategory.MUSIC && gap > 0
+                && (!waitingMusic.isEmpty() || System.currentTimeMillis() - lastMusicHeard < gap);
+    }
+
+    /** Whether a stream in the music category can be heard. A finished one-shot stays listed until it fades out. */
+    public boolean isMusicAudible() {
+        for (Map.Entry<StreamingSound, String> entry : invPlayingSounds.entrySet()) {
+            if (entry.getKey().getCategory() == SoundCategory.MUSIC && getClampedVolume(entry.getKey()) > 0
+                    && getSoundSystem().playing(entry.getValue())) {
                 return true;
             }
         }
@@ -178,6 +219,7 @@ public class LoopingStreamedSoundManager implements SupportsTickEvents, SoundMan
 
                 playingSounds.remove(s);
                 invPlayingSounds.remove(sound);
+                waitingMusic.remove(s);
             }
         }
     }
@@ -234,7 +276,7 @@ public class LoopingStreamedSoundManager implements SupportsTickEvents, SoundMan
         for (String sound : playingSounds.keySet()) {
             if (pause) {
                 getSoundSystem().pause(sound);
-            } else {
+            } else if (!waitingMusic.contains(sound)) {
                 getSoundSystem().play(sound);
             }
 

@@ -63,7 +63,8 @@ public class NoAttenuationMovingSound extends MovingSound implements StreamingSo
             field_147663_c = desiredPitch;
         }
 
-        if (helper.isDoneFadingOut() && repeat && !isDonePlaying()) {
+        // Once faded out, a one-shot is done too, so its machine's next start plays it again from the beginning.
+        if (helper.isDoneFadingOut() && !isDonePlaying()) {
             dispose();
         }
     }

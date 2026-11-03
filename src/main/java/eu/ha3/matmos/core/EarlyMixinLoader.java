@@ -25,7 +25,8 @@ public class EarlyMixinLoader implements IEarlyMixinLoader, IFMLLoadingPlugin {
     public List<String> getMixins(Set<String> loadedCoreMods) {
         return FMLLaunchHandler.side().isClient() ? Arrays.asList("MixinSoundManager", "MixinSoundSystemStarterThread",
                 "accessor.BiomeGenBaseAccessor", "accessor.EntityAccessor", "accessor.FoodStatsAccessor",
-                "accessor.MinecraftAccessor", "accessor.SoundHandlerAccessor", "accessor.SoundManagerAccessor")
+                "accessor.MinecraftAccessor", "accessor.MusicTickerAccessor", "accessor.SoundHandlerAccessor",
+                "accessor.SoundManagerAccessor")
                 : Collections.<String>emptyList();
     }
 
