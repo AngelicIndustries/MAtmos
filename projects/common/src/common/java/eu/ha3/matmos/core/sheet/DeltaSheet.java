@@ -16,15 +16,17 @@ public class DeltaSheet extends GenericSheet implements VirtualSheet {
 
     @Override
     public void apply() {
+        Sheet actual = data.getSheet(actualSheet);
+        Sheet delta = data.getSheet(deltaSheet);
+
         for (String key : values.keySet()) {
-
-            Sheet actual = data.getSheet(actualSheet);
-
-            String previousValue = actual.getOrDefault(key, "0");
             String newValue = values.get(key);
+            // A value seen for the first time is where it starts, not a change from 0: joining a world with full
+            // air otherwise reads as breathing again, and soundpacks play the out-of-water splash.
+            String previousValue = actual.exists(key) ? actual.get(key) : newValue;
 
             actual.set(key, newValue);
-            data.getSheet(deltaSheet).set(key, computeDelta(previousValue, newValue));
+            delta.set(key, computeDelta(previousValue, newValue));
         }
 
         clear();
