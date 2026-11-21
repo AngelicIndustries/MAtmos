@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    uses: GTNewHorizons/GTNH-Actions-Workflows/.github/workflows/build-and-test.yml@master
+    uses: AngelicIndustries/GTNH-Actions-Workflows/.github/workflows/build-and-test.yml@master
     with:
       client-only: true
     secrets: inherit
